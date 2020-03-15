@@ -3,7 +3,6 @@
 #include <TimedAction.h>
 #include <TM1637Display.h>
 
-
 #define servoPin 4
 #define displayCLK 5
 #define displayDIO 6
