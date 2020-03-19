@@ -3,13 +3,13 @@
 #include <TimedAction.h>
 #include <TM1637Display.h>
 
-#define servoPin 4
+#define servoPin A4 //4
 #define displayCLK 5
 #define displayDIO 6
-#define rotaryEncA 8
-#define rotaryEncB 7
-#define buttonPin 9
-#define triggerPin 2
+#define rotaryEncA A1 //8
+#define rotaryEncB A0 //7
+#define buttonPin A2 //9
+#define triggerPin A3 //2
 #define rgbRedPin 10
 #define rgbGreenPin 11
 #define rgbBluePin 12
@@ -17,10 +17,10 @@
 Servo myservo;
 TM1637Display display = TM1637Display(displayCLK, displayDIO);
 
-int minTime = 5;
+int minTime = 10;
 int maxTime = 180;
-int stepTime = 5;
-volatile int totalTime = 5;
+int stepTime = 10;
+volatile int totalTime = minTime;
 volatile int runningTime = totalTime;
 volatile bool isRunning;
 int triggerState;
@@ -29,11 +29,14 @@ int triggerLastState;
 void tick() {
   runningTime--;
   if (runningTime == 0) {
-    isRunning = false;
+    
     display.showNumberDec(totalTime);
     myservo.attach(servoPin);
     myservo.write(90);
-    delay(1000);
+    delay(500);
+    myservo.write(0);
+    isRunning = false;
+    delay(500);
     myservo.detach();
     Serial.print("Timer: ");
     Serial.println(totalTime);
@@ -103,10 +106,10 @@ void setup() {
 //  pinMode(rgbBluePin, OUTPUT);
   isRunning = false;
 //  RGB_color(0, 0, 70);
-  myservo.attach(servoPin);
-  myservo.write(0);
-  delay(1000);
-  myservo.detach();
+//  myservo.attach(servoPin);
+//  myservo.write(0);
+//  delay(1000);
+//  myservo.detach();
 
   Serial.begin(9600);
   enableInterrupt(rotaryEncA, rotaryChange, RISING);
@@ -126,10 +129,6 @@ void loop() {
       isRunning = false;
       runningTime = totalTime;
       display.showNumberDec(totalTime);
-      myservo.attach(servoPin);
-      myservo.write(0);
-      delay(1000);
-      myservo.detach();
     } else {
       Serial.println("Trigger released");
       isRunning = true;
